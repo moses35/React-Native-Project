@@ -68,7 +68,7 @@ export const LoginScreen = () => {
 const styles = StyleSheet.create({
   input: {
     height: 50,
-    width: 343,
+    minWidth: "100%",
     borderWidth: 1,
     padding: 10,
     backgroundColor: "#F6F6F6",
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   inputOnFocus: {
     height: 50,
-    width: 343,
+    minWidth: "100%",
     borderWidth: 1,
     padding: 10,
     backgroundColor: "#FFFFFF",
@@ -92,19 +92,20 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 30,
     fontWeight: "500",
-    marginTop: 32,
     marginBottom: 32,
   },
   loginContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "flex-end",
-    height: "auto",
+    paddingTop: 32,
+    paddingLeft: 16,
+    paddingRight: 16,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
   button: {
-    width: 343,
+    width: "100%",
     height: 50,
     backgroundColor: "#FF6C00",
     marginBottom: 16,
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    color: "white",
+    color: "#FFFFFF",
     fontSize: 16,
     margin: 0,
     padding: 0,
@@ -126,14 +127,6 @@ const styles = StyleSheet.create({
   },
   linkUnderline: {
     textDecorationLine: "underline",
-  },
-  photoContainer: {
-    width: 120,
-    height: 120,
-    marginBottom: 26,
-    borderRadius: 16,
-    backgroundColor: "#F6F6F6",
-    justifyContent: "center",
   },
   showPass: {
     position: "absolute",

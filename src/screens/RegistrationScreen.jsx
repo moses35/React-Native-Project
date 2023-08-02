@@ -9,7 +9,7 @@ import {
   TouchableHighlight,
 } from "react-native";
 
-import Svg, { Circle, Path } from "react-native-svg";
+import { AntDesign } from "@expo/vector-icons";
 
 export const RegistrationScreen = () => {
   const [text, onChangeText] = React.useState("");
@@ -27,21 +27,7 @@ export const RegistrationScreen = () => {
           style={styles.buttonAdd}
           underlayColor="transparent"
         >
-          <Svg
-            width="25"
-            height="25"
-            viewBox="0 0 25 25"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <Circle cx="12.5" cy="12.5" r="12" fill="white" stroke="#FF6C00" />
-            <Path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M13 6H12V12H6V13H12V19H13V13H19V12H13V6Z"
-              fill="#FF6C00"
-            />
-          </Svg>
+          <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
         </TouchableHighlight>
       </View>
       <Text style={styles.text}>Реєстрація</Text>
@@ -106,7 +92,7 @@ export const RegistrationScreen = () => {
 const styles = StyleSheet.create({
   input: {
     height: 50,
-    width: 343,
+    minWidth: "100%",
     borderWidth: 1,
     padding: 10,
     backgroundColor: "#F6F6F6",
@@ -115,7 +101,7 @@ const styles = StyleSheet.create({
   },
   inputOnFocus: {
     height: 50,
-    width: 343,
+    minWidth: "100%",
     borderWidth: 1,
     padding: 10,
     backgroundColor: "#FFFFFF",
@@ -133,15 +119,17 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   registerContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "flex-end",
-    height: 549,
+    paddingTop: 92,
+    paddingLeft: 16,
+    paddingRight: 16,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
   button: {
-    width: 343,
+    width: "100%",
     height: 50,
     backgroundColor: "#FF6C00",
     marginBottom: 16,
@@ -149,7 +137,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    color: "white",
+    color: "#FFFFFF",
     fontSize: 16,
     margin: 0,
     padding: 0,
@@ -162,9 +150,11 @@ const styles = StyleSheet.create({
     marginBottom: 78,
   },
   photoContainer: {
+    position: "absolute",
+    bottom: 32,
+    alignSelf: "center",
     width: 120,
     height: 120,
-    marginBottom: 26,
     borderRadius: 16,
     backgroundColor: "#F6F6F6",
     justifyContent: "center",
@@ -180,7 +170,7 @@ const styles = StyleSheet.create({
   },
   buttonAdd: {
     position: "absolute",
-    right: -12,
-    bottom: 40,
+    right: -72,
+    bottom: 46,
   },
 });

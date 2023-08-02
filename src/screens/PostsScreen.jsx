@@ -49,7 +49,7 @@ export const PostsScreen = () => {
           </Svg>
         </TouchableHighlight>
       </View>
-      <View style={styles.userDataContainer}>
+      <View style={styles.publicationContainer}>
         <View style={styles.userContainer}>
           <View style={styles.imageContainer}>
             <Image
@@ -188,21 +188,12 @@ const styles = StyleSheet.create({
     marginTop: 9,
     alignItems: "center",
   },
-
   userContainer: {
-    flex: 1,
     flexDirection: "row",
     gap: 8,
-    marginTop: 32,
-    marginLeft: 16,
     height: 60,
     alignItems: "center",
     borderRadius: 16,
-  },
-  userDataContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start",
   },
   text: {
     fontSize: 17,
@@ -220,10 +211,15 @@ const styles = StyleSheet.create({
     color: "rgba(33, 33, 33, 0.8)",
   },
   postsContainer: {
-    backgroundColor: "white",
-    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     justifyContent: "space-between",
     height: "100%",
+  },
+  publicationContainer: {
+    flex: 1,
+    paddingTop: 32,
+    paddingLeft: 16,
+    paddingRight: 16,
   },
   button: {
     width: 70,
@@ -239,7 +235,6 @@ const styles = StyleSheet.create({
     marginBottom: 26,
     borderRadius: 16,
     backgroundColor: "#F6F6F6",
-    justifyContent: "center",
   },
   imageContainer: {
     width: 60,
