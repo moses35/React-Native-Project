@@ -218,8 +218,7 @@ const styles = StyleSheet.create({
   publicationContainer: {
     flex: 1,
     paddingTop: 32,
-    paddingLeft: 16,
-    paddingRight: 16,
+    paddingHorizontal: 16,
   },
   button: {
     width: 70,

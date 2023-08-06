@@ -7,85 +7,116 @@ import {
   TouchableOpacity,
   Pressable,
   TouchableHighlight,
+  KeyboardAvoidingView,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 
 import { AntDesign } from "@expo/vector-icons";
 
 export const RegistrationScreen = () => {
   const [text, onChangeText] = React.useState("");
-  const [number, onChangeNumber] = React.useState("");
-  const [password, onPasswordNumber] = React.useState("");
+  const [email, onChangeEmail] = React.useState("");
+  const [password, onChangePassword] = React.useState("");
   const [focusedInput, setFocusedInput] = React.useState("");
   const [isPasswordHidden, setIsPasswordHidden] = React.useState(true);
 
+  const onRegistr = () => {
+    if (!text || !email || !password) {
+      Alert.alert("Fill all fields");
+      return;
+    }
+    console.log(
+      "User data:",
+      `Name: ${text}, Email: ${email}, Password: ${password}`
+    );
+    reset();
+  };
+
+  const reset = () => {
+    onChangeText("");
+    onChangeEmail("");
+    onChangePassword("");
+  };
+
   return (
-    <View style={styles.registerContainer}>
-      <View>
-        <View style={styles.photoContainer}></View>
-        <TouchableHighlight
-          onPress={() => null}
-          style={styles.buttonAdd}
-          underlayColor="transparent"
-        >
-          <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
-        </TouchableHighlight>
-      </View>
-      <Text style={styles.text}>Реєстрація</Text>
-      <View style={styles.inputsContainer}>
-        <TextInput
-          style={[
-            focusedInput === "TextInput1" ? styles.inputOnFocus : styles.input,
-          ]}
-          onChangeText={onChangeText}
-          onFocus={() => setFocusedInput("TextInput1")}
-          onBlur={() => setFocusedInput("")}
-          value={text}
-          placeholder="Логін"
-        />
-        <TextInput
-          style={[
-            focusedInput === "TextInput2" ? styles.inputOnFocus : styles.input,
-          ]}
-          inputMode={"email"}
-          onChangeText={onChangeNumber}
-          onFocus={() => setFocusedInput("TextInput2")}
-          onBlur={() => setFocusedInput("")}
-          value={number}
-          placeholder="Адреса електронної пошти"
-          keyboardType="numeric"
-        />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.registerContainer}>
         <View>
+          <View style={styles.photoContainer}></View>
+          <TouchableHighlight
+            onPress={() => null}
+            style={styles.buttonAdd}
+            underlayColor="transparent"
+          >
+            <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+          </TouchableHighlight>
+        </View>
+        <Text style={styles.text}>Реєстрація</Text>
+
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          style={styles.inputsContainer}
+        >
           <TextInput
             style={[
-              focusedInput === "TextInput3"
+              focusedInput === "TextInput1"
                 ? styles.inputOnFocus
                 : styles.input,
             ]}
-            onChangeText={onPasswordNumber}
-            onFocus={() => setFocusedInput("TextInput3")}
+            onChangeText={onChangeText}
+            onFocus={() => setFocusedInput("TextInput1")}
             onBlur={() => setFocusedInput("")}
-            value={password}
-            placeholder="Пароль"
-            secureTextEntry={isPasswordHidden}
+            value={text}
+            placeholder="Логін"
           />
+          <TextInput
+            style={[
+              focusedInput === "TextInput2"
+                ? styles.inputOnFocus
+                : styles.input,
+            ]}
+            inputMode={"email"}
+            onChangeText={onChangeEmail}
+            onFocus={() => setFocusedInput("TextInput2")}
+            onBlur={() => setFocusedInput("")}
+            value={email}
+            placeholder="Адреса електронної пошти"
+          />
+          <View>
+            <TextInput
+              style={[
+                focusedInput === "TextInput3"
+                  ? styles.inputOnFocus
+                  : styles.input,
+              ]}
+              onChangeText={onChangePassword}
+              onFocus={() => setFocusedInput("TextInput3")}
+              onBlur={() => setFocusedInput("")}
+              value={password}
+              placeholder="Пароль"
+              secureTextEntry={isPasswordHidden}
+            />
 
-          <Pressable
-            style={styles.showPass}
-            onPress={() => setIsPasswordHidden(!isPasswordHidden)}
-          >
-            <Text style={styles.pessableText}>
-              {isPasswordHidden ? "Показати" : "Cховати"}
-            </Text>
-          </Pressable>
-        </View>
+            <Pressable
+              style={styles.showPass}
+              onPress={() => setIsPasswordHidden(!isPasswordHidden)}
+            >
+              <Text style={styles.pessableText}>
+                {isPasswordHidden ? "Показати" : "Cховати"}
+              </Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+        <TouchableOpacity style={styles.button} onPress={onRegistr}>
+          <Text style={styles.buttonText}>Зареєструватися</Text>
+        </TouchableOpacity>
+        <Text style={styles.link} onPress={() => console.log("click")}>
+          Вже є акаунт? Увійти
+        </Text>
       </View>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Зареєструватися</Text>
-      </TouchableOpacity>
-      <Text style={styles.link} onPress={() => console.log("click")}>
-        Вже є акаунт? Увійти
-      </Text>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -123,8 +154,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
     paddingTop: 92,
-    paddingLeft: 16,
-    paddingRight: 16,
+    paddingHorizontal: 16,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
