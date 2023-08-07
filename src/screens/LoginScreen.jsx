@@ -34,59 +34,63 @@ export const LoginScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.loginContainer}>
-        <Text style={styles.text}>Увійти</Text>
-        <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-          style={styles.inputsContainer}
-        >
-          <TextInput
-            style={[
-              focusedInput === "TextInput1"
-                ? styles.inputOnFocus
-                : styles.input,
-            ]}
-            inputMode={"email"}
-            onChangeText={onChangeEmail}
-            onFocus={() => setFocusedInput("TextInput1")}
-            onBlur={() => setFocusedInput("")}
-            value={email}
-            placeholder="Адреса електронної пошти"
-            keyboardType="numeric"
-          />
-          <View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={-210}
+      >
+        <View style={styles.loginContainer}>
+          <Text style={styles.text}>Увійти</Text>
+
+          <View style={styles.inputsContainer}>
             <TextInput
               style={[
-                focusedInput === "TextInput2"
+                focusedInput === "TextInput1"
                   ? styles.inputOnFocus
                   : styles.input,
               ]}
-              onChangeText={onChangePassword}
-              onFocus={() => setFocusedInput("TextInput2")}
+              inputMode={"email"}
+              onChangeText={onChangeEmail}
+              onFocus={() => setFocusedInput("TextInput1")}
               onBlur={() => setFocusedInput("")}
-              value={password}
-              placeholder="Пароль"
-              secureTextEntry={isPasswordHidden}
+              value={email}
+              placeholder="Адреса електронної пошти"
+              keyboardType="numeric"
             />
+            <View>
+              <TextInput
+                style={[
+                  focusedInput === "TextInput2"
+                    ? styles.inputOnFocus
+                    : styles.input,
+                ]}
+                onChangeText={onChangePassword}
+                onFocus={() => setFocusedInput("TextInput2")}
+                onBlur={() => setFocusedInput("")}
+                value={password}
+                placeholder="Пароль"
+                secureTextEntry={isPasswordHidden}
+              />
 
-            <Pressable
-              style={styles.showPass}
-              onPress={() => setIsPasswordHidden(!isPasswordHidden)}
-            >
-              <Text style={styles.pessableText}>
-                {isPasswordHidden ? "Показати" : "Cховати"}
-              </Text>
-            </Pressable>
+              <Pressable
+                style={styles.showPass}
+                onPress={() => setIsPasswordHidden(!isPasswordHidden)}
+              >
+                <Text style={styles.pessableText}>
+                  {isPasswordHidden ? "Показати" : "Cховати"}
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        </KeyboardAvoidingView>
-        <TouchableOpacity style={styles.button} onPress={onLogin}>
-          <Text style={styles.buttonText}>Увійти</Text>
-        </TouchableOpacity>
-        <Text style={styles.link} onPress={() => console.log("click")}>
-          Немає акаунту?{" "}
-          <Text style={styles.linkUnderline}>Зареєструватися</Text>
-        </Text>
-      </View>
+
+          <TouchableOpacity style={styles.button} onPress={onLogin}>
+            <Text style={styles.buttonText}>Увійти</Text>
+          </TouchableOpacity>
+          <Text style={styles.link} onPress={() => console.log("click")}>
+            Немає акаунту?
+            <Text style={styles.linkUnderline}>Зареєструватися</Text>
+          </Text>
+        </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
