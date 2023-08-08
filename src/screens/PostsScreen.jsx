@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 import Svg, { Rect, Path } from "react-native-svg";
-import UserPhoto from "../assets/userPhoto.jpg";
+import UserPhoto from "../assets/images/userPhoto.jpg";
 
 export const PostsScreen = () => {
   return (

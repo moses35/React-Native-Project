@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   Alert,
 } from "react-native";
+import { Background } from "../components/Background";
 
 export const LoginScreen = () => {
   const [email, onChangeEmail] = React.useState("");
@@ -36,7 +37,8 @@ export const LoginScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={-210}
+        keyboardVerticalOffset={-250}
+        style={styles.keyboarView}
       >
         <View style={styles.loginContainer}>
           <Text style={styles.text}>Увійти</Text>
@@ -86,8 +88,8 @@ export const LoginScreen = () => {
             <Text style={styles.buttonText}>Увійти</Text>
           </TouchableOpacity>
           <Text style={styles.link} onPress={() => console.log("click")}>
-            Немає акаунту?
-            <Text style={styles.linkUnderline}>Зареєструватися</Text>
+            Немає акаунту?{" "}
+            <Text style={styles.linkUnderline}> Зареєструватися</Text>
           </Text>
         </View>
       </KeyboardAvoidingView>
@@ -96,6 +98,10 @@ export const LoginScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  keyboarView: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
   input: {
     height: 50,
     minWidth: "100%",
