@@ -46,7 +46,7 @@ export const RegistrationScreen = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         keyboardVerticalOffset={-190}
-        style={styles.keyboarView}
+        style={styles.keyboardView}
       >
         <View style={styles.registerContainer}>
           <View>
@@ -124,7 +124,7 @@ export const RegistrationScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  keyboarView: {
+  keyboardView: {
     flex: 1,
     justifyContent: "flex-end",
   },
