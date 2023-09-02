@@ -5,15 +5,16 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Pressable,
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
   Alert,
 } from "react-native";
 import { Background } from "../components/Background";
+import { useNavigation } from "@react-navigation/native";
 
 export const LoginScreen = () => {
+  const navigation = useNavigation();
   const [email, onChangeEmail] = React.useState("");
   const [password, onChangePassword] = React.useState("");
   const [focusedInput, setFocusedInput] = React.useState("");
@@ -26,6 +27,7 @@ export const LoginScreen = () => {
     }
     console.log("Login data:", `Email: ${email}, Password: ${password}`);
     reset();
+    navigation.navigate("Home");
   };
 
   const reset = () => {
@@ -40,58 +42,61 @@ export const LoginScreen = () => {
         keyboardVerticalOffset={-250}
         style={styles.keyboardView}
       >
-        <View style={styles.loginContainer}>
-          <Text style={styles.text}>Увійти</Text>
+        <Background>
+          <View style={styles.loginContainer}>
+            <Text style={styles.text}>Увійти</Text>
 
-          <View style={styles.inputsContainer}>
-            <TextInput
-              style={[
-                focusedInput === "TextInput1"
-                  ? styles.inputOnFocus
-                  : styles.input,
-              ]}
-              inputMode={"email"}
-              onChangeText={onChangeEmail}
-              onFocus={() => setFocusedInput("TextInput1")}
-              onBlur={() => setFocusedInput("")}
-              value={email}
-              placeholder="Адреса електронної пошти"
-              keyboardType="numeric"
-            />
-            <View>
+            <View style={styles.inputsContainer}>
               <TextInput
                 style={[
-                  focusedInput === "TextInput2"
+                  focusedInput === "TextInput1"
                     ? styles.inputOnFocus
                     : styles.input,
                 ]}
-                onChangeText={onChangePassword}
-                onFocus={() => setFocusedInput("TextInput2")}
+                inputMode={"email"}
+                onChangeText={onChangeEmail}
+                onFocus={() => setFocusedInput("TextInput1")}
                 onBlur={() => setFocusedInput("")}
-                value={password}
-                placeholder="Пароль"
-                secureTextEntry={isPasswordHidden}
+                value={email}
+                placeholder="Адреса електронної пошти"
+                keyboardType="numeric"
               />
-
-              <Pressable
-                style={styles.showPass}
-                onPress={() => setIsPasswordHidden(!isPasswordHidden)}
-              >
-                <Text style={styles.pessableText}>
+              <View>
+                <TextInput
+                  style={[
+                    focusedInput === "TextInput2"
+                      ? styles.inputOnFocus
+                      : styles.input,
+                  ]}
+                  onChangeText={onChangePassword}
+                  onFocus={() => setFocusedInput("TextInput2")}
+                  onBlur={() => setFocusedInput("")}
+                  value={password}
+                  placeholder="Пароль"
+                  secureTextEntry={isPasswordHidden}
+                />
+                <Text
+                  style={styles.pressableText}
+                  onPress={() => setIsPasswordHidden(!isPasswordHidden)}
+                >
                   {isPasswordHidden ? "Показати" : "Cховати"}
                 </Text>
-              </Pressable>
+              </View>
             </View>
+            <TouchableOpacity style={styles.button} onPress={onLogin}>
+              <Text style={styles.buttonText}>Увійти</Text>
+            </TouchableOpacity>
+            <Text style={styles.link}>
+              Немає акаунту?{" "}
+              <Text
+                style={styles.linkUnderline}
+                onPress={() => navigation.navigate("Registration")}
+              >
+                Зареєструватися
+              </Text>
+            </Text>
           </View>
-
-          <TouchableOpacity style={styles.button} onPress={onLogin}>
-            <Text style={styles.buttonText}>Увійти</Text>
-          </TouchableOpacity>
-          <Text style={styles.link} onPress={() => console.log("click")}>
-            Немає акаунту?{" "}
-            <Text style={styles.linkUnderline}> Зареєструватися</Text>
-          </Text>
-        </View>
+        </Background>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -159,18 +164,17 @@ const styles = StyleSheet.create({
     color: "#1B4371",
     fontSize: 16,
     marginBottom: 144,
+    marginRight: 10,
   },
   linkUnderline: {
     textDecorationLine: "underline",
   },
-  showPass: {
+  pressableText: {
     position: "absolute",
-    right: 16,
-    bottom: 16,
-  },
-  pessableText: {
     color: "#1B4371",
     fontSize: 16,
+    right: 16,
+    bottom: 16,
   },
   buttonAdd: {
     position: "absolute",
