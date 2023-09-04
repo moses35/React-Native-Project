@@ -1,21 +1,28 @@
 import React from "react";
 import {
   StyleSheet,
-  Text,
   View,
   TextInput,
-  TouchableHighlight,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Keyboard,
   Image,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
+  SafeAreaView,
 } from "react-native";
 
 import { AntDesign } from "@expo/vector-icons";
 import { Comment } from "../components/Comment";
 import Forest from "../assets/images/forest.jpg";
+import { dataComments } from "../data/dataComments";
+
+const DATA = [
+  {
+    id: "1",
+  },
+];
+
 export const CommentsScreen = () => {
   const [text, onChangeText] = React.useState("");
   return (
@@ -25,32 +32,19 @@ export const CommentsScreen = () => {
         keyboardVerticalOffset={0}
         style={styles.keyboardView}
       >
-        <View style={styles.commentsContainer}>
-          <View style={styles.topContainer}>
-            <Text style={styles.text}>Коментарі</Text>
-            <TouchableHighlight
-              onPress={() => console.log("click")}
-              style={styles.arrowLeft}
-              underlayColor="transparent"
-            >
-              <AntDesign
-                name="arrowleft"
-                size={24}
-                color="rgba(33, 33, 33, 0.8)"
-              />
-            </TouchableHighlight>
-          </View>
+        <SafeAreaView style={styles.commentsContainer}>
           <View style={styles.publicationContainer}>
-            <ScrollView style={styles.comments}>
+            <View style={styles.comments}>
               <View style={styles.photoContainer}>
                 <Image source={Forest} style={styles.image} />
               </View>
-
-              <Comment />
-              <Comment />
-              <Comment />
-            </ScrollView>
-
+            </View>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={DATA}
+              renderItem={() => <Comment comments={dataComments} />}
+              keyExtractor={(item) => item.id}
+            />
             <View>
               <TextInput
                 style={styles.input}
@@ -63,27 +57,13 @@ export const CommentsScreen = () => {
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  topContainer: {
-    width: "100%",
-    alignItems: "center",
-    marginTop: 44,
-    borderBottomWidth: 1,
-    borderColor: "#BDBDBD",
-  },
-
-  text: {
-    fontSize: 17,
-    fontWeight: "500",
-    marginTop: 11,
-    marginBottom: 11,
-  },
   commentsContainer: {
     flex: 1,
     backgroundColor: "#FFFFFF",

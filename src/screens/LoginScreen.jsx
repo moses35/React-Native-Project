@@ -86,15 +86,14 @@ export const LoginScreen = () => {
             <TouchableOpacity style={styles.button} onPress={onLogin}>
               <Text style={styles.buttonText}>Увійти</Text>
             </TouchableOpacity>
-            <Text style={styles.link}>
-              Немає акаунту?{" "}
-              <Text
-                style={styles.linkUnderline}
-                onPress={() => navigation.navigate("Registration")}
-              >
-                Зареєструватися
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Registration")}
+            >
+              <Text style={styles.link}>
+                Немає акаунту?{" "}
+                <Text style={styles.linkUnderline}>Зареєструватися</Text>
               </Text>
-            </Text>
+            </TouchableOpacity>
           </View>
         </Background>
       </KeyboardAvoidingView>

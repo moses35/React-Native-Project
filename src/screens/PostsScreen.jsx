@@ -1,50 +1,50 @@
 import React from "react";
-import { StyleSheet, Text, View, ScrollView, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  FlatList,
+  SafeAreaView,
+} from "react-native";
 import UserPhoto from "../assets/images/userPhoto.jpg";
 import { Publication } from "../components/Publication";
-import { LogOutButton } from "../components/LogOutButton";
+import { DATA } from "../data/data";
 
 export const PostsScreen = () => {
   return (
-    <View style={styles.postsContainer}>
-      <View style={styles.topContainer}>
-        <Text style={styles.text}>Публікації</Text>
-        <LogOutButton />
-      </View>
+    <SafeAreaView style={styles.postsContainer}>
       <View style={styles.publicationContainer}>
-        <View style={styles.userContainer}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={UserPhoto}
-              maxWidth={60}
-              maxHeight={60}
-              borderRadius={16}
-            />
-          </View>
-          <View>
-            <Text style={styles.textName}>Natali Romanova</Text>
-            <Text style={styles.textEmail}>email@example.com</Text>
-          </View>
-        </View>
-        <ScrollView>
-          <Publication country={"Ivano-Frankivs'k Region, Ukraine"} />
-          <Publication country={"Ivano-Frankivs'k Region, Ukraine"} />
-          <Publication country={"Ivano-Frankivs'k Region, Ukraine"} />
-        </ScrollView>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={DATA}
+          renderItem={() => (
+            <Publication country={"Ivano-Frankivs'k Region, Ukraine"} />
+          )}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={
+            <View style={styles.userContainer}>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={UserPhoto}
+                  maxWidth={60}
+                  maxHeight={60}
+                  borderRadius={16}
+                />
+              </View>
+              <View>
+                <Text style={styles.textName}>Natali Romanova</Text>
+                <Text style={styles.textEmail}>email@example.com</Text>
+              </View>
+            </View>
+          }
+        />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  topContainer: {
-    width: "100%",
-    alignItems: "center",
-    marginTop: 44,
-    borderBottomWidth: 1,
-    borderColor: "#BDBDBD",
-  },
-
   userContainer: {
     flexDirection: "row",
     gap: 8,
@@ -53,12 +53,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 32,
   },
-  text: {
-    fontSize: 17,
-    fontWeight: "500",
-    marginTop: 11,
-    marginBottom: 11,
-  },
+
   textName: {
     fontSize: 13,
     fontWeight: "700",

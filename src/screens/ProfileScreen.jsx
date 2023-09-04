@@ -3,22 +3,31 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   Image,
   TouchableHighlight,
+  TouchableOpacity,
+  FlatList,
+  SafeAreaView,
 } from "react-native";
 
 import { Background } from "../components/Background";
 import { Publication } from "../components/Publication";
-import { SimpleLineIcons } from "@expo/vector-icons";
+import { SimpleLineIcons, Feather } from "@expo/vector-icons";
 import UserPhoto from "../assets/images/userPhoto.jpg";
-import { LogOutButton } from "../components/LogOutButton";
+import { useNavigation } from "@react-navigation/native";
+import { DATA } from "../data/data";
 
 export const ProfileScreen = () => {
+  const navigation = useNavigation();
   return (
     <Background>
-      <View style={styles.registerContainer}>
-        <LogOutButton profileScreen={true} />
+      <SafeAreaView style={styles.registerContainer}>
+        <TouchableOpacity
+          style={styles.logOut}
+          onPress={() => navigation.navigate("Login")}
+        >
+          <Feather name="log-out" size={24} color="#BDBDBD" />
+        </TouchableOpacity>
         <View>
           <View style={styles.photoContainer}>
             <Image
@@ -42,14 +51,25 @@ export const ProfileScreen = () => {
             />
           </TouchableHighlight>
         </View>
-        <Text style={styles.text}>Natali Romanova</Text>
 
-        <ScrollView style={styles.publicationsContainer}>
-          <Publication showLikes={true} country={"Ukraine"} />
-          <Publication showLikes={true} country={"Ukraine"} />
-          <Publication showLikes={true} country={"Italy"} />
-        </ScrollView>
-      </View>
+        <FlatList
+          style={styles.publicationsContainer}
+          showsVerticalScrollIndicator={false}
+          data={DATA}
+          renderItem={() => (
+            <Publication
+              showLikes={true}
+              country={"Ivano-Frankivs'k Region, Ukraine"}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={
+            <View>
+              <Text style={styles.text}>Natali Romanova</Text>
+            </View>
+          }
+        />
+      </SafeAreaView>
     </Background>
   );
 };
@@ -59,6 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "500",
     marginBottom: 32,
+    textAlign: "center",
   },
   registerContainer: {
     backgroundColor: "#FFFFFF",
@@ -115,5 +136,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+  logOut: {
+    position: "absolute",
+    right: 16,
+    top: 22,
   },
 });
