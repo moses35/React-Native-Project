@@ -7,11 +7,38 @@ import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { CommentsScreen } from "../screens/CommentsScreen";
 
+export const stateReset = () => {
+  return true;
+};
+
 export const TopNavigator = () => {
   const TopTabs = createBottomTabNavigator();
   const navigation = useNavigation();
   return (
     <TopTabs.Navigator initialRouteName="PostsScreen">
+      <TopTabs.Screen
+        name="PostsScreen"
+        component={PostsScreen}
+        options={{
+          headerTitle: () => <Text style={styles.title}>Публікації</Text>,
+          headerStyle: {
+            borderBottomWidth: 1,
+          },
+          headerTitleAlign: "center",
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Feather
+                style={styles.logOut}
+                name="log-out"
+                size={24}
+                color="#BDBDBD"
+              />
+            </TouchableOpacity>
+          ),
+          tabBarStyle: { display: "none" },
+        }}
+      />
+
       <TopTabs.Screen
         name="CommentsScreen"
         component={CommentsScreen}
@@ -38,29 +65,6 @@ export const TopNavigator = () => {
       />
 
       <TopTabs.Screen
-        name="PostsScreen"
-        component={PostsScreen}
-        options={{
-          headerTitle: () => <Text style={styles.title}>Публікації</Text>,
-          headerStyle: {
-            borderBottomWidth: 1,
-          },
-          headerTitleAlign: "center",
-          headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-              <Feather
-                style={styles.logOut}
-                name="log-out"
-                size={24}
-                color="#BDBDBD"
-              />
-            </TouchableOpacity>
-          ),
-          tabBarStyle: { display: "none" },
-        }}
-      />
-
-      <TopTabs.Screen
         name="Map"
         component={MapScreen}
         options={{
@@ -71,7 +75,9 @@ export const TopNavigator = () => {
           headerTitleAlign: "center",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => navigation.navigate("PostsScreen")}
+              onPress={() => {
+                navigation.navigate("PostsScreen");
+              }}
             >
               <AntDesign
                 style={styles.arrowLeft}

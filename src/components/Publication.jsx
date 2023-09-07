@@ -11,15 +11,32 @@ import Forest from "../assets/images/forest.jpg";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export const Publication = ({ showLikes = false, country = "No country" }) => {
+export const Publication = ({
+  showLikes = false,
+  item,
+  profileScreen = false,
+}) => {
   const navigation = useNavigation();
+  const {
+    title = "No title",
+    country = "No country",
+    latitude,
+    longitude,
+  } = item;
+
   return (
-    <View style={styles.postContainer}>
+    <View
+      style={[
+        profileScreen
+          ? styles.postContainerProfileScreen
+          : styles.postContainerPostScreen,
+      ]}
+    >
       <View style={styles.photoContainer}>
         <Image source={Forest} style={styles.image} />
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.title}>Ліс</Text>
+        <Text style={styles.title}>{title}</Text>
       </View>
       <View style={styles.infoContainer}>
         <TouchableHighlight
@@ -49,7 +66,7 @@ export const Publication = ({ showLikes = false, country = "No country" }) => {
         />
         <Text
           style={styles.pressableText}
-          onPress={() => navigation.navigate("Map")}
+          onPress={() => navigation.navigate("Map", { latitude, longitude })}
         >
           {country}
         </Text>
@@ -59,7 +76,12 @@ export const Publication = ({ showLikes = false, country = "No country" }) => {
 };
 
 const styles = StyleSheet.create({
-  postContainer: {
+  postContainerProfileScreen: {
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingBottom: 34,
+  },
+  postContainerPostScreen: {
     marginBottom: 34,
   },
   photoContainer: {

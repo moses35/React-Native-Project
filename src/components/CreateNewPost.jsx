@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,20 +7,102 @@ import {
   TextInput,
 } from "react-native";
 
-import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
-import Svg, { Rect, Path } from "react-native-svg";
+import {
+  MaterialIcons,
+  MaterialCommunityIcons,
+  Feather,
+} from "@expo/vector-icons";
+
+import { useNavigation } from "@react-navigation/native";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+import * as Location from "expo-location";
 
 export const CreateNewPost = () => {
-  const [text, onChangeText] = React.useState("");
-  const [location, onChangeLocation] = React.useState("");
+  const navigation = useNavigation();
+  const [text, setOnChangeText] = React.useState("");
+  const [locationName, setOnChangeLocationName] = React.useState("");
   const [isDisebled, setIsDisebled] = React.useState(true);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [location, setLocation] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+
+      setHasPermission(status === "granted");
+    })();
+
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (text === "" || locationName === "") {
+      setIsDisebled(true);
+    }
+    if (text !== "" && locationName !== "") {
+      setIsDisebled(false);
+    }
+  }, [text, locationName]);
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+  const getLocation = async () => {
+    let location = await Location.getCurrentPositionAsync({});
+    const coords = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    setLocation(coords);
+    console.log(coords);
+  };
 
   return (
     <View>
       <View style={styles.photoContainer}>
-        <TouchableOpacity style={styles.addPhoto}>
-          <MaterialIcons name="photo-camera" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
+        <Camera style={styles.camera} type={type} ref={setCameraRef}>
+          <TouchableOpacity
+            style={styles.flipContainer}
+            onPress={() => {
+              setType(
+                type === Camera.Constants.Type.back
+                  ? Camera.Constants.Type.front
+                  : Camera.Constants.Type.back
+              );
+            }}
+          >
+            <MaterialCommunityIcons
+              style={styles.flipIcon}
+              name="camera-flip-outline"
+              size={24}
+              color="#FFFFFF"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addPhoto}
+            onPress={async () => {
+              if (cameraRef) {
+                const { uri } = await cameraRef.takePictureAsync();
+                await MediaLibrary.createAssetAsync(uri);
+              }
+            }}
+          >
+            <MaterialIcons name="photo-camera" size={24} color="#BDBDBD" />
+          </TouchableOpacity>
+        </Camera>
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.textUnderPhoto}>Завантажте фото</Text>
@@ -28,40 +110,21 @@ export const CreateNewPost = () => {
       <View style={styles.inputsContainer}>
         <TextInput
           style={styles.input}
-          onChangeText={onChangeText}
+          onChangeText={setOnChangeText}
           value={text}
           placeholder="Назва..."
         />
         <View style={styles.inputLocationContainer}>
-          <Svg
+          <Feather
             style={styles.locationIcon}
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <Path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M20 10.3636C20 16.0909 12 21 12 21C12 21 4 16.0909 4 10.3636C4 6.29681 7.58172 3 12 3C16.4183 3 20 6.29681 20 10.3636V10.3636Z"
-              stroke="#BDBDBD"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <Path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M12 14C13.6569 14 15 12.6569 15 11C15 9.34315 13.6569 8 12 8C10.3431 8 9 9.34315 9 11C9 12.6569 10.3431 14 12 14Z"
-              stroke="#BDBDBD"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </Svg>
+            name="map-pin"
+            size={24}
+            color="#BDBDBD"
+          />
           <TextInput
             style={styles.inputLocation}
-            onChangeText={onChangeLocation}
-            value={location}
+            onChangeText={setOnChangeLocationName}
+            value={locationName}
             placeholder="Місцевість..."
           />
         </View>
@@ -69,7 +132,10 @@ export const CreateNewPost = () => {
       <TouchableOpacity
         style={[isDisebled ? styles.buttonDisabled : styles.button]}
         disabled={isDisebled}
-        onPress={() => console.log("press")}
+        onPress={async () => {
+          await getLocation();
+          navigation.navigate("PostsScreen");
+        }}
       >
         <Text
           style={[isDisebled ? styles.buttonTextDisabled : styles.buttonText]}
@@ -105,6 +171,8 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   addPhoto: {
+    position: "absolute",
+    top: 90,
     alignItems: "center",
     justifyContent: "center",
     width: 60,
@@ -163,5 +231,19 @@ const styles = StyleSheet.create({
     padding: 0,
     textAlign: "center",
     alignItems: "center",
+  },
+  camera: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    borderRadius: 16,
+  },
+  flipContainer: {
+    flex: 1,
+    alignSelf: "flex-end",
+  },
+  flipIcon: {
+    marginTop: 10,
+    marginRight: 10,
   },
 });

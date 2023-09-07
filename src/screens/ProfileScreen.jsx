@@ -20,57 +20,53 @@ import { DATA } from "../data/data";
 export const ProfileScreen = () => {
   const navigation = useNavigation();
   return (
-    <Background>
-      <SafeAreaView style={styles.registerContainer}>
-        <TouchableOpacity
-          style={styles.logOut}
-          onPress={() => navigation.navigate("Login")}
-        >
-          <Feather name="log-out" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
-        <View>
-          <View style={styles.photoContainer}>
-            <Image
-              source={UserPhoto}
-              maxWidth={120}
-              maxHeight={120}
-              borderRadius={16}
-            />
-          </View>
-          <TouchableHighlight
-            onPress={() => null}
-            style={styles.buttonAdd}
-            underlayColor="transparent"
-          >
-            <SimpleLineIcons
-              style={styles.closeIcon}
-              name="close"
-              size={25}
-              color="#E8E8E8"
-              backgroundColor={"#FFFFFF"}
-            />
-          </TouchableHighlight>
-        </View>
-
+    <SafeAreaView style={styles.profileContainer}>
+      <Background>
         <FlatList
           style={styles.publicationsContainer}
           showsVerticalScrollIndicator={false}
           data={DATA}
-          renderItem={() => (
-            <Publication
-              showLikes={true}
-              country={"Ivano-Frankivs'k Region, Ukraine"}
-            />
+          renderItem={({ item }) => (
+            <Publication item={item} profileScreen={true} showLikes={true} />
           )}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={
-            <View>
+            <View style={styles.registerContainer}>
+              <TouchableOpacity
+                style={styles.logOut}
+                onPress={() => navigation.navigate("Login")}
+              >
+                <Feather name="log-out" size={24} color="#BDBDBD" />
+              </TouchableOpacity>
+              <View>
+                <View style={styles.photoContainer}>
+                  <Image
+                    source={UserPhoto}
+                    maxWidth={120}
+                    maxHeight={120}
+                    borderRadius={16}
+                  />
+                </View>
+                <TouchableHighlight
+                  onPress={() => null}
+                  style={styles.buttonAdd}
+                  underlayColor="transparent"
+                >
+                  <SimpleLineIcons
+                    style={styles.closeIcon}
+                    name="close"
+                    size={25}
+                    color="#E8E8E8"
+                    backgroundColor={"#FFFFFF"}
+                  />
+                </TouchableHighlight>
+              </View>
               <Text style={styles.text}>Natali Romanova</Text>
             </View>
           }
         />
-      </SafeAreaView>
-    </Background>
+      </Background>
+    </SafeAreaView>
   );
 };
 
@@ -89,7 +85,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    marginTop: "60%",
+    marginTop: 130,
   },
 
   photoContainer: {
@@ -108,6 +104,7 @@ const styles = StyleSheet.create({
     bottom: 46,
   },
   publicationsContainer: {
+    flex: 1,
     width: "100%",
   },
   closeIcon: {
@@ -141,5 +138,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 16,
     top: 22,
+  },
+  profileContainer: {
+    flex: 1,
   },
 });

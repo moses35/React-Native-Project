@@ -16,6 +16,7 @@ import { CreateNewPost } from "../components/CreateNewPost";
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation();
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView

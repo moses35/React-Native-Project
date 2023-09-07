@@ -59,6 +59,7 @@ export const BottomTabNavigator = () => {
         name="CreatePost"
         component={CreatePostsScreen}
         options={{
+          unmountOnBlur: true,
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: { display: "none" },

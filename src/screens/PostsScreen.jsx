@@ -18,9 +18,7 @@ export const PostsScreen = () => {
         <FlatList
           showsVerticalScrollIndicator={false}
           data={DATA}
-          renderItem={() => (
-            <Publication country={"Ivano-Frankivs'k Region, Ukraine"} />
-          )}
+          renderItem={({ item }) => <Publication item={item} />}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={
             <View style={styles.userContainer}>
