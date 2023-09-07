@@ -7,10 +7,6 @@ import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { CommentsScreen } from "../screens/CommentsScreen";
 
-export const stateReset = () => {
-  return true;
-};
-
 export const TopNavigator = () => {
   const TopTabs = createBottomTabNavigator();
   const navigation = useNavigation();
