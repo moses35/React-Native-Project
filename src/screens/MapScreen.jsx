@@ -13,16 +13,20 @@ export const MapScreen = () => {
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-      }
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Permission to access location was denied");
+        }
 
-      const coords = {
-        latitude: latitude,
-        longitude: longitude,
-      };
-      setLocation(coords);
+        const coords = {
+          latitude: latitude,
+          longitude: longitude,
+        };
+        setLocation(coords);
+      } catch (error) {
+        console.log(error);
+      }
     })();
   }, [latitude, longitude]);
 

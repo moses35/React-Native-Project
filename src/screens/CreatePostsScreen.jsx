@@ -1,22 +1,15 @@
 import React from "react";
 import {
   StyleSheet,
-  Text,
   View,
-  TouchableOpacity,
-  TouchableHighlight,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Keyboard,
 } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
-import { AntDesign, Feather } from "@expo/vector-icons";
 import { CreateNewPost } from "../components/CreateNewPost";
 
 export const CreatePostsScreen = () => {
-  const navigation = useNavigation();
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -25,29 +18,8 @@ export const CreatePostsScreen = () => {
         style={styles.keyboardView}
       >
         <View style={styles.postsContainer}>
-          <View style={styles.topContainer}>
-            <Text style={styles.text}>Створити публікацію</Text>
-            <TouchableHighlight
-              onPress={() => navigation.navigate("PostsScreen")}
-              style={styles.arrowLeft}
-              underlayColor="transparent"
-            >
-              <AntDesign
-                name="arrowleft"
-                size={24}
-                color="rgba(33, 33, 33, 0.8)"
-              />
-            </TouchableHighlight>
-          </View>
           <View style={styles.publicationContainer}>
             <CreateNewPost />
-          </View>
-          <View style={styles.bottomContainer}>
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity style={styles.button}>
-                <Feather name="trash-2" size={24} color="#DADADA" />
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       </KeyboardAvoidingView>

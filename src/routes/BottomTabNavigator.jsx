@@ -2,14 +2,15 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { CreatePostsScreen } from "../screens/CreatePostsScreen";
 import { ProfileScreen } from "../screens/ProfileScreen";
-import { Feather } from "@expo/vector-icons";
-import { StyleSheet, View } from "react-native";
+import { Feather, AntDesign } from "@expo/vector-icons";
+import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import { TopNavigator } from "./TopNavigator";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 export const BottomTabNavigator = () => {
   const Tabs = createBottomTabNavigator();
-
+  const navigation = useNavigation();
   const checkScreenName = (route) => {
     const screenName = getFocusedRouteNameFromRoute(route) ?? "";
     if (screenName === "CommentsScreen") {
@@ -56,13 +57,32 @@ export const BottomTabNavigator = () => {
       />
 
       <Tabs.Screen
-        name="CreatePost"
+        name="CreatePostsScreen"
         component={CreatePostsScreen}
         options={{
           unmountOnBlur: true,
-          headerShown: false,
+
           tabBarShowLabel: false,
           tabBarStyle: { display: "none" },
+          headerTitle: () => (
+            <Text style={styles.title}>Створити публікацію</Text>
+          ),
+          headerStyle: {
+            borderBottomWidth: 1,
+          },
+          headerTitleAlign: "center",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("PostsScreen")}
+            >
+              <AntDesign
+                style={styles.arrowLeft}
+                name="arrowleft"
+                size={24}
+                color="rgba(33, 33, 33, 0.8)"
+              />
+            </TouchableOpacity>
+          ),
           tabBarIcon: ({ focused }) => (
             <View>
               {focused ? (
@@ -114,5 +134,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+  title: {
+    color: "#212121",
+    fontFamily: "Roboto_500Medium",
+    fontSize: 17,
+  },
+  arrowLeft: {
+    marginLeft: 16,
   },
 });
