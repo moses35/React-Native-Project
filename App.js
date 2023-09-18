@@ -1,16 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-
+import { PersistGate } from "redux-persist/integration/react";
+import { Provider } from "react-redux";
+import { persistor, store } from "./src/redux/store";
 import "react-native-gesture-handler";
 import { MainNavigator } from "./src/routes/MainNavigator";
-import { RegistrationScreen } from "./src/screens/RegistrationScreen";
-import { LoginScreen } from "./src/screens/LoginScreen";
-import { PostsScreen } from "./src/screens/PostsScreen";
-import { CreatePostsScreen } from "./src/screens/CreatePostsScreen";
-import { ProfileScreen } from "./src/screens/ProfileScreen";
-import { CommentsScreen } from "./src/screens/CommentsScreen";
-import { Background } from "./src/components/Background";
+
 import {
   useFonts,
   Roboto_400Regular,
@@ -30,15 +26,13 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <MainNavigator />
-      {/* <RegistrationScreen /> */}
-      {/* <LoginScreen /> */}
-      {/* <PostsScreen /> */}
-      {/* <CreatePostsScreen /> */}
-      {/* <ProfileScreen /> */}
-      {/* <CommentsScreen /> */}
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <NavigationContainer>
+          <MainNavigator />
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,22 +12,45 @@ import {
 } from "react-native";
 import { Background } from "../components/Background";
 import { useNavigation } from "@react-navigation/native";
+import { loginDB } from "../auth/auth";
+import { useSelector, useDispatch } from "react-redux";
+import { selectIsLoggedIn, setUser } from "../redux/authSlice";
+import { auth } from "../../config";
 
 export const LoginScreen = () => {
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   const navigation = useNavigation();
   const [email, onChangeEmail] = React.useState("");
   const [password, onChangePassword] = React.useState("");
   const [focusedInput, setFocusedInput] = React.useState("");
   const [isPasswordHidden, setIsPasswordHidden] = React.useState(true);
 
-  const onLogin = () => {
-    if (!email || !password) {
-      Alert.alert("Fill all fields");
-      return;
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation.navigate("Home");
     }
-    console.log("Login data:", `Email: ${email}, Password: ${password}`);
-    reset();
-    navigation.navigate("Home");
+  }, [isLoggedIn]);
+
+  const onLogin = async () => {
+    try {
+      if (!email || !password) {
+        Alert.alert("Fill all fields");
+        return;
+      }
+      console.log("Login data:", `Email: ${email}, Password: ${password}`);
+
+      await loginDB(email, password);
+      const idToken = await auth.currentUser.getIdToken();
+      const { displayName, uid } = auth.currentUser;
+
+      dispatch(setUser({ displayName, email, password, idToken, uid }));
+
+      reset();
+      navigation.navigate("Home");
+    } catch (error) {
+      reset();
+    }
   };
 
   const reset = () => {

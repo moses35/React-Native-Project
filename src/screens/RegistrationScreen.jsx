@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,30 +13,50 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Background } from "../components/Background";
 import { ProfilePhoto } from "../components/ProfilePhoto";
+import { registerDB } from "../auth/auth";
+import { selectIsLoggedIn } from "../redux/authSlice";
+import { useSelector } from "react-redux";
 
 export const RegistrationScreen = () => {
   const navigation = useNavigation();
-  const [text, onChangeText] = React.useState("");
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const [name, onChangeName] = React.useState("");
   const [email, onChangeEmail] = React.useState("");
   const [password, onChangePassword] = React.useState("");
   const [focusedInput, setFocusedInput] = React.useState("");
   const [isPasswordHidden, setIsPasswordHidden] = React.useState(true);
+  const [imagePath, setImagePath] = React.useState(null);
 
-  const onRegistr = () => {
-    if (!text || !email || !password) {
-      Alert.alert("Fill all fields");
-      return;
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation.navigate("Home");
     }
-    console.log(
-      "User data:",
-      `Name: ${text}, Email: ${email}, Password: ${password}`
-    );
-    reset();
-    navigation.navigate("Home");
+  }, [isLoggedIn]);
+
+  const onRegistr = async () => {
+    try {
+      if (!name || !email || !password) {
+        Alert.alert("Fill all fields");
+        return;
+      }
+      console.log(
+        "User data:",
+        `Name: ${name}, Email: ${email}, Password: ${password}`
+      );
+      await registerDB(imagePath, name, email, password);
+      reset();
+      navigation.navigate("Home");
+      alert("Registration successful");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
+  const getImage = (photo) => {
+    setImagePath(photo);
+  };
   const reset = () => {
-    onChangeText("");
+    onChangeName("");
     onChangeEmail("");
     onChangePassword("");
   };
@@ -50,7 +70,7 @@ export const RegistrationScreen = () => {
       >
         <Background>
           <View style={styles.registerContainer}>
-            <ProfilePhoto />
+            <ProfilePhoto getImage={getImage} />
             <Text style={styles.text}>Реєстрація</Text>
             <View style={styles.inputsContainer}>
               <TextInput
@@ -59,10 +79,10 @@ export const RegistrationScreen = () => {
                     ? styles.inputOnFocus
                     : styles.input,
                 ]}
-                onChangeText={onChangeText}
+                onChangeText={onChangeName}
                 onFocus={() => setFocusedInput("TextInput1")}
                 onBlur={() => setFocusedInput("")}
-                value={text}
+                value={name}
                 placeholder="Логін"
               />
               <TextInput

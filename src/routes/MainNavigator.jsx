@@ -11,12 +11,12 @@ export const MainNavigator = () => {
       <MainStack.Screen
         name="Registration"
         component={RegistrationScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, unmountOnBlur: true }}
       />
       <MainStack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, unmountOnBlur: true }}
       />
       <MainStack.Screen
         name="Home"

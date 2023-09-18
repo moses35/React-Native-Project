@@ -6,10 +6,15 @@ import { Feather, AntDesign } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { CommentsScreen } from "../screens/CommentsScreen";
+import { logOut, selectIsLoggedIn } from "../redux/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { firebaseLogOut } from "../auth/auth";
 
 export const TopNavigator = () => {
   const TopTabs = createBottomTabNavigator();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
   return (
     <TopTabs.Navigator initialRouteName="PostsScreen">
       <TopTabs.Screen
@@ -22,64 +27,17 @@ export const TopNavigator = () => {
           },
           headerTitleAlign: "center",
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(logOut());
+                firebaseLogOut();
+              }}
+            >
               <Feather
                 style={styles.logOut}
                 name="log-out"
                 size={24}
                 color="#BDBDBD"
-              />
-            </TouchableOpacity>
-          ),
-          tabBarStyle: { display: "none" },
-        }}
-      />
-
-      <TopTabs.Screen
-        name="CommentsScreen"
-        component={CommentsScreen}
-        options={{
-          headerTitle: () => <Text style={styles.title}>Коментарі</Text>,
-          headerStyle: {
-            borderBottomWidth: 1,
-          },
-          headerTitleAlign: "center",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("PostsScreen")}
-            >
-              <AntDesign
-                style={styles.arrowLeft}
-                name="arrowleft"
-                size={24}
-                color="rgba(33, 33, 33, 0.8)"
-              />
-            </TouchableOpacity>
-          ),
-          tabBarStyle: { display: "none" },
-        }}
-      />
-
-      <TopTabs.Screen
-        name="Map"
-        component={MapScreen}
-        options={{
-          headerTitle: () => <Text style={styles.title}>Карта</Text>,
-          headerStyle: {
-            borderBottomWidth: 1,
-          },
-          headerTitleAlign: "center",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("PostsScreen");
-              }}
-            >
-              <AntDesign
-                style={styles.arrowLeft}
-                name="arrowleft"
-                size={24}
-                color="rgba(33, 33, 33, 0.8)"
               />
             </TouchableOpacity>
           ),

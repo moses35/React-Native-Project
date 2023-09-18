@@ -7,10 +7,13 @@ import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import { TopNavigator } from "./TopNavigator";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
+import { CommentsScreen } from "../screens/CommentsScreen";
+import { MapScreen } from "../screens/MapScreen";
 
 export const BottomTabNavigator = () => {
   const Tabs = createBottomTabNavigator();
   const navigation = useNavigation();
+
   const checkScreenName = (route) => {
     const screenName = getFocusedRouteNameFromRoute(route) ?? "";
     if (screenName === "CommentsScreen") {
@@ -39,6 +42,7 @@ export const BottomTabNavigator = () => {
         name="Posts"
         component={TopNavigator}
         options={{
+          unmountOnBlur: true,
           headerShown: false,
           tabBarShowLabel: false,
 
@@ -72,9 +76,7 @@ export const BottomTabNavigator = () => {
           },
           headerTitleAlign: "center",
           headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("PostsScreen")}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate("Posts")}>
               <AntDesign
                 style={styles.arrowLeft}
                 name="arrowleft"
@@ -101,6 +103,7 @@ export const BottomTabNavigator = () => {
         name="Profile"
         component={ProfileScreen}
         options={{
+          unmountOnBlur: true,
           headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ focused }) => {
@@ -120,6 +123,61 @@ export const BottomTabNavigator = () => {
               </View>
             );
           },
+        }}
+      />
+
+      <Tabs.Screen
+        name="Comments"
+        component={CommentsScreen}
+        options={{
+          unmountOnBlur: true,
+          headerTitle: () => <Text style={styles.title}>Коментарі</Text>,
+          headerStyle: {
+            borderBottomWidth: 1,
+          },
+          headerTitleAlign: "center",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.navigate("Posts")}>
+              <AntDesign
+                style={styles.arrowLeft}
+                name="arrowleft"
+                size={24}
+                color="rgba(33, 33, 33, 0.8)"
+              />
+            </TouchableOpacity>
+          ),
+          tabBarStyle: { display: "none" },
+          tabBarButton: () => null,
+          tabBarVisible: false,
+        }}
+      />
+
+      <Tabs.Screen
+        name="Map"
+        component={MapScreen}
+        options={{
+          headerTitle: () => <Text style={styles.title}>Карта</Text>,
+          headerStyle: {
+            borderBottomWidth: 1,
+          },
+          headerTitleAlign: "center",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("Posts");
+              }}
+            >
+              <AntDesign
+                style={styles.arrowLeft}
+                name="arrowleft"
+                size={24}
+                color="rgba(33, 33, 33, 0.8)"
+              />
+            </TouchableOpacity>
+          ),
+          tabBarStyle: { display: "none" },
+          tabBarButton: () => null,
+          tabBarVisible: false,
         }}
       />
     </Tabs.Navigator>

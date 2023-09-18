@@ -1,10 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
-  Image,
-  TouchableHighlight,
   TouchableOpacity,
   FlatList,
   SafeAreaView,
@@ -12,59 +10,86 @@ import {
 
 import { Background } from "../components/Background";
 import { Publication } from "../components/Publication";
-import { SimpleLineIcons, Feather } from "@expo/vector-icons";
-import UserPhoto from "../assets/images/userPhoto.jpg";
+import { Feather } from "@expo/vector-icons";
+import { firebaseLogOut } from "../auth/auth";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  logOut,
+  selectId,
+  selectIsLoggedIn,
+  selectName,
+} from "../redux/authSlice";
+import { ProfilePhoto } from "../components/ProfilePhoto";
+import { getData } from "../db/firestoreBase";
 import { useNavigation } from "@react-navigation/native";
-import { DATA } from "../data/data";
 
 export const ProfileScreen = () => {
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   const navigation = useNavigation();
+  const userName = useSelector(selectName);
+  const [data, setData] = React.useState([]);
+  const userId = useSelector(selectId);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigation.navigate("Login");
+      dispatch(logOut());
+      firebaseLogOut();
+    }
+  }, [isLoggedIn]);
+
+  const getPosts = async () => {
+    try {
+      const data = await getData();
+      const userPosts = data.filter((doc) => {
+        return doc.owner === userId;
+      });
+
+      setData(userPosts);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getPosts();
+  }, []);
+
   return (
     <SafeAreaView style={styles.profileContainer}>
       <Background>
-        <FlatList
-          style={styles.publicationsContainer}
-          showsVerticalScrollIndicator={false}
-          data={DATA}
-          renderItem={({ item }) => (
-            <Publication item={item} profileScreen={true} showLikes={true} />
-          )}
-          keyExtractor={(item) => item.id}
-          ListHeaderComponent={
-            <View style={styles.registerContainer}>
-              <TouchableOpacity
-                style={styles.logOut}
-                onPress={() => navigation.navigate("Login")}
-              >
-                <Feather name="log-out" size={24} color="#BDBDBD" />
-              </TouchableOpacity>
-              <View>
-                <View style={styles.photoContainer}>
-                  <Image
-                    source={UserPhoto}
-                    maxWidth={120}
-                    maxHeight={120}
-                    borderRadius={16}
-                  />
-                </View>
-                <TouchableHighlight
-                  onPress={() => null}
-                  style={styles.buttonAdd}
-                  underlayColor="transparent"
+        {data && (
+          <FlatList
+            style={styles.publicationsContainer}
+            showsVerticalScrollIndicator={false}
+            data={data}
+            renderItem={({ item }) => (
+              <Publication
+                item={item}
+                profileScreen={true}
+                showLikes={true}
+                postOnProfileScreen={getPosts}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            ListHeaderComponent={
+              <View style={styles.registerContainer}>
+                <TouchableOpacity
+                  style={styles.logOut}
+                  onPress={() => {
+                    dispatch(logOut());
+                    firebaseLogOut();
+                  }}
                 >
-                  <SimpleLineIcons
-                    style={styles.closeIcon}
-                    name="close"
-                    size={25}
-                    color="#E8E8E8"
-                    backgroundColor={"#FFFFFF"}
-                  />
-                </TouchableHighlight>
+                  <Feather name="log-out" size={24} color="#BDBDBD" />
+                </TouchableOpacity>
+
+                <ProfilePhoto profile={true} />
+
+                <Text style={styles.text}>{userName}</Text>
               </View>
-              <Text style={styles.text}>Natali Romanova</Text>
-            </View>
-          }
-        />
+            }
+          />
+        )}
       </Background>
     </SafeAreaView>
   );
@@ -74,13 +99,15 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 30,
     fontWeight: "500",
-    marginBottom: 32,
+    marginBottom: 30,
     textAlign: "center",
   },
   registerContainer: {
+    flex: 1,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "flex-end",
+
     paddingTop: 92,
     paddingHorizontal: 16,
     borderTopLeftRadius: 25,
@@ -90,7 +117,7 @@ const styles = StyleSheet.create({
 
   photoContainer: {
     position: "absolute",
-    bottom: 32,
+    bottom: 70,
     alignSelf: "center",
     width: 120,
     height: 120,
@@ -141,5 +168,6 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flex: 1,
+    justifyContent: "flex-end",
   },
 });

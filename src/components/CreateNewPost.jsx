@@ -14,12 +14,17 @@ import {
   MaterialCommunityIcons,
   Feather,
 } from "@expo/vector-icons";
-
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../config";
 import { useNavigation } from "@react-navigation/native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
+import { writeDataToFirestore } from "../db/firestoreBase";
+import { selectId } from "../redux/authSlice";
+import { useSelector } from "react-redux";
+import { makePath } from "../helpers/makePath";
 
 export const CreateNewPost = () => {
   const navigation = useNavigation();
@@ -34,6 +39,7 @@ export const CreateNewPost = () => {
   const [image, setImage] = useState(null);
   const [imageFromGallery, setImageFromGallery] = useState(null);
   const [location, setLocation] = useState(null);
+  const userId = useSelector(selectId);
 
   useEffect(() => {
     (async () => {
@@ -125,6 +131,7 @@ export const CreateNewPost = () => {
       if (!result.canceled) {
         setImage(null);
         setImageFromGallery(result.assets[0].uri);
+        await getLocation();
       }
     } catch (error) {
       console.log(error);
@@ -199,7 +206,9 @@ export const CreateNewPost = () => {
                       setLoader(true);
                       const { uri } = await cameraRef.takePictureAsync();
                       const asset = await MediaLibrary.createAssetAsync(uri);
+
                       setImage(asset);
+                      await getLocation();
                       setLoader(false);
                     }
                   } catch (error) {
@@ -244,9 +253,53 @@ export const CreateNewPost = () => {
           style={[isDisebled ? styles.buttonDisabled : styles.button]}
           disabled={isDisebled}
           onPress={async () => {
+            let filename = null;
             try {
-              await getLocation();
-              navigation.navigate("PostsScreen");
+              const blob = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                  resolve(xhr.response);
+                };
+                xhr.onerror = function () {
+                  reject(new Error("uriToBlob failed"));
+                };
+                xhr.responseType = "blob";
+
+                if (image) {
+                  xhr.open("GET", image.uri, true);
+                }
+                if (imageFromGallery) {
+                  xhr.open("GET", imageFromGallery, true);
+                }
+
+                xhr.send(null);
+              });
+
+              if (image) {
+                filename = image.filename;
+              }
+
+              if (imageFromGallery) {
+                filename = makePath(30);
+              }
+
+              const storageRef = ref(storage, filename);
+
+              const photoUrl = await uploadBytes(storageRef, blob).then(
+                (snapshot) => {
+                  console.log("Uploaded file!");
+                  return snapshot.ref._location.path_;
+                }
+              );
+
+              await writeDataToFirestore(
+                userId,
+                photoUrl,
+                text,
+                locationName,
+                location
+              );
+              navigation.navigate("Posts");
             } catch (error) {
               console.log(error);
             }

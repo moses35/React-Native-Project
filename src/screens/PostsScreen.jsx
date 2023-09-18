@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,36 +7,107 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
-import UserPhoto from "../assets/images/userPhoto.jpg";
+
 import { Publication } from "../components/Publication";
-import { DATA } from "../data/data";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  logOut,
+  selectEmail,
+  selectIsLoggedIn,
+  selectName,
+} from "../redux/authSlice";
+import { useNavigation } from "@react-navigation/native";
+import { storage, auth } from "../../config";
+import { getDownloadURL, ref } from "firebase/storage";
+import { getData } from "../db/firestoreBase";
+import { firebaseLogOut } from "../auth/auth";
 
 export const PostsScreen = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const userEmail = useSelector(selectEmail);
+  const userName = useSelector(selectName);
+  const [data, setData] = React.useState([]);
+  const [image, setImage] = React.useState(null);
+  const [link, setLink] = React.useState(null);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigation.navigate("Login");
+      dispatch(logOut());
+      firebaseLogOut();
+    }
+  }, [isLoggedIn]);
+
+  useEffect(
+    () =>
+      navigation.addListener("beforeRemove", (e) => {
+        if (!isLoggedIn) {
+          return;
+        }
+
+        e.preventDefault();
+
+        navigation.navigate("PostsScreen");
+      }),
+    [isLoggedIn]
+  );
+  const getPosts = async () => {
+    try {
+      const data = await getData();
+
+      setData(data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getPosts();
+  }, []);
+
+  useEffect(() => {
+    const func = async () => {
+      if (auth.currentUser) {
+        const { photoURL } = auth.currentUser;
+        setLink(photoURL);
+      }
+      try {
+        const reference = ref(storage, link);
+        await getDownloadURL(reference).then((userPhotolink) => {
+          setImage(userPhotolink);
+        });
+      } catch (error) {}
+    };
+
+    func();
+  }, [image, link]);
+
   return (
     <SafeAreaView style={styles.postsContainer}>
       <View style={styles.publicationContainer}>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={DATA}
-          renderItem={({ item }) => <Publication item={item} />}
-          keyExtractor={(item) => item.id}
-          ListHeaderComponent={
-            <View style={styles.userContainer}>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={UserPhoto}
-                  maxWidth={60}
-                  maxHeight={60}
-                  borderRadius={16}
-                />
+        {data && (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={data}
+            renderItem={({ item }) => (
+              <Publication item={item} postOnPostsScreen={getPosts} />
+            )}
+            keyExtractor={(item) => item.id}
+            ListHeaderComponent={
+              <View style={styles.userContainer}>
+                <View style={styles.imageContainer}>
+                  {image && (
+                    <Image source={{ uri: image }} style={styles.image} />
+                  )}
+                </View>
+                <View>
+                  <Text style={styles.textName}>{userName}</Text>
+                  <Text style={styles.textEmail}>{userEmail}</Text>
+                </View>
               </View>
-              <View>
-                <Text style={styles.textName}>Natali Romanova</Text>
-                <Text style={styles.textEmail}>email@example.com</Text>
-              </View>
-            </View>
-          }
-        />
+            }
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -83,6 +154,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+  },
+  image: {
+    flex: 1,
+    width: "100%",
+
     borderRadius: 16,
   },
 });

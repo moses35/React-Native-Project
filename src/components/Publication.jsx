@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,22 +7,79 @@ import {
   TouchableHighlight,
 } from "react-native";
 
-import Forest from "../assets/images/forest.jpg";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { storage, auth, db } from "../../config";
+import { getDownloadURL, ref } from "firebase/storage";
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  deleteDoc,
+} from "firebase/firestore";
 
 export const Publication = ({
   showLikes = false,
   item,
   profileScreen = false,
+  postOnPostsScreen,
+  postOnProfileScreen,
 }) => {
   const navigation = useNavigation();
+  const [link, setLink] = React.useState(null);
+  const [activeLike, setActiveLike] = React.useState(false);
+
   const {
+    id,
     title = "No title",
     country = "No country",
-    latitude,
-    longitude,
+    locationOnMap,
+    url,
+    comments,
+    likes,
   } = item;
+
+  const { uid } = auth.currentUser;
+  let coord1 = 37.4219983;
+  let coord2 = -122.084;
+
+  const getlocationOnMap = () => {
+    try {
+      const { latitude, longitude } = locationOnMap;
+      if (latitude && longitude) {
+        coord1 = latitude;
+        coord2 = longitude;
+      }
+    } catch (error) {}
+  };
+
+  getlocationOnMap();
+
+  useEffect(() => {
+    const func = async () => {
+      const path = `/${url}`;
+      try {
+        const reference = ref(storage, path);
+        await getDownloadURL(reference).then((link) => {
+          setLink(link);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    func();
+  }, [link, url]);
+
+  useEffect(() => {
+    const isLikeActive = likes.find((item) => item === uid);
+    if (isLikeActive) {
+      setActiveLike(true);
+    } else {
+      setActiveLike(false);
+    }
+  }, [likes]);
 
   return (
     <View
@@ -33,30 +90,88 @@ export const Publication = ({
       ]}
     >
       <View style={styles.photoContainer}>
-        <Image source={Forest} style={styles.image} />
+        <Image source={{ uri: link }} style={styles.image} />
+        {profileScreen && (
+          <TouchableHighlight
+            style={styles.deleteIcon}
+            onPress={async () => {
+              await deleteDoc(doc(db, "posts", id));
+              postOnProfileScreen();
+            }}
+          >
+            <Feather name="trash-2" size={24} color="#FFFFFF" />
+          </TouchableHighlight>
+        )}
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
       </View>
       <View style={styles.infoContainer}>
         <TouchableHighlight
-          onPress={() => navigation.navigate("CommentsScreen")}
+          onPress={() => navigation.navigate("Comments", { id })}
           underlayColor="transparent"
         >
-          <FontAwesome name="comment-o" size={24} color="#BDBDBD" />
+          <FontAwesome
+            name="comment-o"
+            size={24}
+            color={comments.length > 0 ? "#FF6C00" : "#BDBDBD"}
+          />
         </TouchableHighlight>
-        <Text style={styles.numberOfComments}>0</Text>
-        {showLikes && (
-          <View style={styles.likesContainer}>
-            <TouchableHighlight
-              onPress={() => null}
-              underlayColor="transparent"
-            >
-              <Feather name="thumbs-up" size={24} color="#BDBDBD" />
-            </TouchableHighlight>
-            <Text style={styles.numberOfLikes}>0</Text>
-          </View>
-        )}
+        <Text
+          style={[
+            comments.length > 0
+              ? styles.numberOfCommentsActive
+              : styles.numberOfComments,
+          ]}
+        >
+          {comments.length}
+        </Text>
+
+        <View style={styles.likesContainer}>
+          <TouchableHighlight
+            onPress={async () => {
+              if (activeLike) {
+                const docRef = doc(db, "posts", id);
+                await updateDoc(docRef, {
+                  likes: arrayRemove(uid),
+                });
+                if (postOnPostsScreen) {
+                  postOnPostsScreen();
+                }
+                if (postOnProfileScreen) {
+                  postOnProfileScreen();
+                }
+              } else {
+                const docRef = doc(db, "posts", id);
+                await updateDoc(docRef, {
+                  likes: arrayUnion(uid),
+                });
+                if (postOnPostsScreen) {
+                  postOnPostsScreen();
+                }
+                if (postOnProfileScreen) {
+                  postOnProfileScreen();
+                }
+              }
+            }}
+            underlayColor="transparent"
+          >
+            <Feather
+              name="thumbs-up"
+              size={24}
+              color={activeLike ? "#FF6C00" : "#BDBDBD"}
+            />
+          </TouchableHighlight>
+          <Text
+            style={[
+              likes.length > 0
+                ? styles.numberOfLikesActive
+                : styles.numberOfLikes,
+            ]}
+          >
+            {likes.length}
+          </Text>
+        </View>
 
         <Feather
           name="map-pin"
@@ -66,7 +181,7 @@ export const Publication = ({
         />
         <Text
           style={styles.pressableText}
-          onPress={() => navigation.navigate("Map", { latitude, longitude })}
+          onPress={() => navigation.navigate("Map", { coord1, coord2 })}
         >
           {country}
         </Text>
@@ -77,6 +192,7 @@ export const Publication = ({
 
 const styles = StyleSheet.create({
   postContainerProfileScreen: {
+    flex: 1,
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
     paddingBottom: 34,
@@ -104,6 +220,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   image: {
+    flex: 1,
     width: "100%",
     borderRadius: 16,
   },
@@ -123,8 +240,17 @@ const styles = StyleSheet.create({
     color: "#BDBDBD",
     marginLeft: 6,
   },
+  numberOfCommentsActive: {
+    color: "#212121",
+    marginLeft: 6,
+  },
   numberOfLikes: {
     color: "#BDBDBD",
+    marginLeft: 6,
+    marginRight: "auto",
+  },
+  numberOfLikesActive: {
+    color: "#212121",
     marginLeft: 6,
     marginRight: "auto",
   },
@@ -135,5 +261,10 @@ const styles = StyleSheet.create({
   },
   locitionIcon: {
     marginLeft: "auto",
+  },
+  deleteIcon: {
+    position: "absolute",
+    top: 15,
+    right: 15,
   },
 });

@@ -8,7 +8,7 @@ export const MapScreen = () => {
   const [location, setLocation] = useState(null);
 
   const {
-    params: { latitude, longitude },
+    params: { coord1, coord2 },
   } = useRoute();
 
   useEffect(() => {
@@ -20,15 +20,13 @@ export const MapScreen = () => {
         }
 
         const coords = {
-          latitude: latitude,
-          longitude: longitude,
+          latitude: coord1,
+          longitude: coord2,
         };
         setLocation(coords);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     })();
-  }, [latitude, longitude]);
+  }, [coord1, coord2]);
 
   return (
     <View style={styles.container}>
