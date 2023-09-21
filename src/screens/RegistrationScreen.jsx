@@ -14,10 +14,13 @@ import { useNavigation } from "@react-navigation/native";
 import { Background } from "../components/Background";
 import { ProfilePhoto } from "../components/ProfilePhoto";
 import { registerDB } from "../auth/auth";
-import { selectIsLoggedIn } from "../redux/authSlice";
-import { useSelector } from "react-redux";
+import { selectIsLoggedIn, registerUser } from "../redux/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+
+import { auth } from "../../config";
 
 export const RegistrationScreen = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const [name, onChangeName] = React.useState("");
@@ -34,19 +37,25 @@ export const RegistrationScreen = () => {
   }, [isLoggedIn]);
 
   const onRegistr = async () => {
+    const emailRegaxp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     try {
       if (!name || !email || !password) {
         Alert.alert("Fill all fields");
         return;
       }
-      console.log(
-        "User data:",
-        `Name: ${name}, Email: ${email}, Password: ${password}`
-      );
-      await registerDB(imagePath, name, email, password);
-      reset();
-      navigation.navigate("Home");
-      alert("Registration successful");
+      if (password.length < 7) {
+        Alert.alert("Password too short");
+        return;
+      }
+      if (emailRegaxp.test(email)) {
+        await registerDB(imagePath, name, email, password);
+        const { accessToken, uid } = auth.currentUser;
+        dispatch(registerUser({ name, email, password, accessToken, uid }));
+        reset();
+        navigation.navigate("Home");
+      } else {
+        Alert.alert("Not valid email. Example: email@example.com");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -97,6 +106,7 @@ export const RegistrationScreen = () => {
                 onBlur={() => setFocusedInput("")}
                 value={email}
                 placeholder="Адреса електронної пошти"
+                autoCapitalize={"none"}
               />
               <View>
                 <TextInput
@@ -111,6 +121,7 @@ export const RegistrationScreen = () => {
                   value={password}
                   placeholder="Пароль"
                   secureTextEntry={isPasswordHidden}
+                  autoCapitalize={"none"}
                 />
 
                 <Text

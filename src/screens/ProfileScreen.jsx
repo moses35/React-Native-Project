@@ -22,6 +22,7 @@ import {
 import { ProfilePhoto } from "../components/ProfilePhoto";
 import { getData } from "../db/firestoreBase";
 import { useNavigation } from "@react-navigation/native";
+import { EmptyComponent } from "../components/EmtyComponent";
 
 export const ProfileScreen = () => {
   const dispatch = useDispatch();
@@ -50,46 +51,58 @@ export const ProfileScreen = () => {
     } catch (error) {}
   };
 
+  const scrollToTop = () => {
+    ListRef.scrollToOffset({ offset: 170, animted: true });
+  };
+
   useEffect(() => {
     getPosts();
+    scrollToTop();
   }, []);
 
   return (
     <SafeAreaView style={styles.profileContainer}>
       <Background>
-        {data && (
-          <FlatList
-            style={styles.publicationsContainer}
-            showsVerticalScrollIndicator={false}
-            data={data}
-            renderItem={({ item }) => (
-              <Publication
-                item={item}
-                profileScreen={true}
-                showLikes={true}
-                postOnProfileScreen={getPosts}
-              />
-            )}
-            keyExtractor={(item) => item.id}
-            ListHeaderComponent={
-              <View style={styles.registerContainer}>
-                <TouchableOpacity
-                  style={styles.logOut}
-                  onPress={() => {
-                    dispatch(logOut());
-                    firebaseLogOut();
-                  }}
-                >
-                  <Feather name="log-out" size={24} color="#BDBDBD" />
-                </TouchableOpacity>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={data}
+          renderItem={({ item }) => (
+            <Publication
+              item={item}
+              profileScreen={true}
+              showLikes={true}
+              postOnProfileScreen={getPosts}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={
+            <View
+              style={[
+                data.length > 1
+                  ? styles.headerComponentContainerData
+                  : styles.headerComponentContainer,
+              ]}
+            >
+              <TouchableOpacity
+                style={styles.logOut}
+                onPress={() => {
+                  dispatch(logOut());
+                  firebaseLogOut();
+                }}
+              >
+                <Feather name="log-out" size={24} color="#BDBDBD" />
+              </TouchableOpacity>
 
-                <ProfilePhoto profile={true} />
+              <ProfilePhoto profile={true} />
 
-                <Text style={styles.text}>{userName}</Text>
-              </View>
-            }
-          />
-        )}
+              <Text style={styles.text}>{userName}</Text>
+            </View>
+          }
+          ListEmptyComponent={EmptyComponent}
+          ref={(ref) => {
+            ListRef = ref;
+          }}
+        />
       </Background>
     </SafeAreaView>
   );
@@ -102,28 +115,28 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: "center",
   },
-  registerContainer: {
+  headerComponentContainer: {
     flex: 1,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "flex-end",
-
     paddingTop: 92,
     paddingHorizontal: 16,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    marginTop: 130,
+    marginTop: "70%",
   },
 
-  photoContainer: {
-    position: "absolute",
-    bottom: 70,
-    alignSelf: "center",
-    width: 120,
-    height: 120,
-    borderRadius: 16,
-    backgroundColor: "#F6F6F6",
-    justifyContent: "center",
+  headerComponentContainerData: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    paddingTop: 92,
+    paddingHorizontal: 16,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    marginTop: "40%",
   },
   buttonAdd: {
     position: "absolute",
@@ -133,6 +146,8 @@ const styles = StyleSheet.create({
   publicationsContainer: {
     flex: 1,
     width: "100%",
+    borderWidth: 1,
+    borderColor: "red",
   },
   closeIcon: {
     borderRadius: 50,

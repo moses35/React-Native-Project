@@ -33,24 +33,27 @@ export const LoginScreen = () => {
   }, [isLoggedIn]);
 
   const onLogin = async () => {
+    const emailRegaxp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     try {
       if (!email || !password) {
         Alert.alert("Fill all fields");
         return;
       }
-      console.log("Login data:", `Email: ${email}, Password: ${password}`);
+      if (password.length < 7) {
+        Alert.alert("Password too short");
+        return;
+      }
 
-      await loginDB(email, password);
-      const idToken = await auth.currentUser.getIdToken();
-      const { displayName, uid } = auth.currentUser;
-
-      dispatch(setUser({ displayName, email, password, idToken, uid }));
-
-      reset();
-      navigation.navigate("Home");
-    } catch (error) {
-      reset();
-    }
+      if (emailRegaxp.test(email)) {
+        await loginDB(email, password);
+        const { displayName, uid, accessToken } = auth.currentUser;
+        dispatch(setUser({ displayName, email, password, accessToken, uid }));
+        reset();
+        navigation.navigate("Home");
+      } else {
+        Alert.alert("Not valid email. Example: email@example.com");
+      }
+    } catch (error) {}
   };
 
   const reset = () => {
@@ -83,6 +86,7 @@ export const LoginScreen = () => {
                 value={email}
                 placeholder="Адреса електронної пошти"
                 keyboardType="numeric"
+                autoCapitalize={"none"}
               />
               <View>
                 <TextInput
@@ -97,6 +101,7 @@ export const LoginScreen = () => {
                   value={password}
                   placeholder="Пароль"
                   secureTextEntry={isPasswordHidden}
+                  autoCapitalize={"none"}
                 />
                 <Text
                   style={styles.pressableText}

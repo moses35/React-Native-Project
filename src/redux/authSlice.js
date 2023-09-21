@@ -11,13 +11,19 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    registerUser(state, action) {
+      state.user.email = action.payload.email;
+      state.user.name = action.payload.name;
+      state.user.uid = action.payload.uid;
+      state.isLoggedIn = true;
+      state.token = action.payload.accessToken;
+    },
     setUser(state, action) {
       state.user.email = action.payload.email;
       state.user.name = action.payload.displayName;
       state.user.uid = action.payload.uid;
       state.isLoggedIn = true;
-      state.token = action.payload.idToken;
-      console.log("authState:", state);
+      state.token = action.payload.accessToken;
     },
     logOut(state) {
       state.user.email = "";
@@ -25,7 +31,6 @@ const authSlice = createSlice({
       state.user.uid = null;
       state.isLoggedIn = false;
       state.token = null;
-      console.log("authState:", state);
     },
   },
 });
@@ -45,4 +50,4 @@ export const selectEmail = (state) => state.auth.user.email;
 export const selectName = (state) => state.auth.user.name;
 export const selectId = (state) => state.auth.user.uid;
 
-export const { setUser, logOut } = authSlice.actions;
+export const { registerUser, setUser, logOut } = authSlice.actions;

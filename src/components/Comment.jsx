@@ -10,20 +10,20 @@ export const Comment = ({ item, getComments }) => {
   const { uid } = auth.currentUser;
   const { postId, commentText, date, owner, photo } = item;
 
-  useEffect(() => {
-    const func = async () => {
-      try {
+  const getPhoto = async () => {
+    try {
+      if (image === null) {
         const reference = ref(storage, photo);
         await getDownloadURL(reference).then((link) => {
           setImage(link);
         });
-      } catch (error) {
-        console.log(error);
       }
-    };
+    } catch (error) {}
+  };
 
-    func();
-  }, [photo]);
+  useEffect(() => {
+    getPhoto();
+  }, []);
 
   return (
     <View style={styles.userComments}>

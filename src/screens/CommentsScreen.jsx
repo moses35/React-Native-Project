@@ -19,6 +19,7 @@ import { useRoute } from "@react-navigation/native";
 import { getData } from "../db/firestoreBase";
 import { getDownloadURL, ref } from "firebase/storage";
 import { auth, db, storage } from "../../config";
+import { makePath } from "../helpers/makePath";
 
 export const CommentsScreen = () => {
   const [text, onChangeText] = React.useState("");
@@ -65,7 +66,6 @@ export const CommentsScreen = () => {
       const { photoURL, uid } = auth.currentUser;
       const time = Date.now();
       const today = new Date(time);
-
       const userComment = {
         postId: id,
         photo: photoURL,
@@ -102,7 +102,7 @@ export const CommentsScreen = () => {
               renderItem={({ item }) => (
                 <Comment item={item} getComments={getComments} />
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={() => makePath(17)}
             />
             <View>
               <TextInput

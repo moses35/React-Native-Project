@@ -5,18 +5,12 @@ import * as ImagePicker from "expo-image-picker";
 import { Image } from "react-native";
 import { storage } from "../../config";
 import { updateUserPhoto } from "../auth/auth";
-import {
-  getDownloadURL,
-  ref,
-  uploadBytes,
-  deleteObject,
-} from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { makePath } from "../helpers/makePath";
 import { auth } from "../../config";
 
 export const ProfilePhoto = ({ getImage, profile = false }) => {
   const [image, setImage] = React.useState(null);
-  const [link, setLink] = React.useState(null);
 
   const pickImage = async () => {
     try {
@@ -47,7 +41,6 @@ export const ProfilePhoto = ({ getImage, profile = false }) => {
         const storageRef = ref(storage, filename);
 
         const path = await uploadBytes(storageRef, blob).then((snapshot) => {
-          console.log("Uploaded a blob or file!");
           return snapshot.ref._location.path_;
         });
         await updateUserPhoto(path);
@@ -58,20 +51,19 @@ export const ProfilePhoto = ({ getImage, profile = false }) => {
 
   useEffect(() => {
     const func = async () => {
-      if (auth.currentUser) {
-        const { photoURL } = auth.currentUser;
-        setLink(photoURL);
-      }
       try {
-        const reference = ref(storage, link);
-        await getDownloadURL(reference).then((userPhotolink) => {
-          setImage(userPhotolink);
-        });
+        if (auth.currentUser) {
+          const { photoURL } = auth.currentUser;
+          const reference = ref(storage, photoURL);
+          await getDownloadURL(reference).then((userPhotolink) => {
+            setImage(userPhotolink);
+          });
+        }
       } catch (error) {}
     };
 
     func();
-  }, [image, link]);
+  }, [setImage]);
 
   return (
     <View style={[profile ? styles.containerProfile : styles.container]}>
@@ -84,17 +76,8 @@ export const ProfilePhoto = ({ getImage, profile = false }) => {
         {image ? (
           <TouchableHighlight
             onPress={async () => {
-              const desertRef = ref(storage, link);
+              await updateUserPhoto("");
               setImage(null);
-              if (link) {
-                await deleteObject(desertRef)
-                  .then(() => {
-                    setImage(null);
-                    setLink(null);
-                    console.log("Object delete");
-                  })
-                  .catch((error) => {});
-              }
             }}
             style={[profile ? styles.buttonAddProfileScreen : styles.buttonAdd]}
             underlayColor="transparent"
@@ -139,7 +122,6 @@ const styles = StyleSheet.create({
   },
   photoContainerProfileScreen: {
     flex: 1,
-    alignSelf: "center",
     width: 120,
     height: 120,
     borderRadius: 16,
@@ -165,7 +147,8 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     width: "100%",
-
+    overflow: "visible",
+    objectFit: "cover",
     borderRadius: 16,
   },
   closeIcon: {

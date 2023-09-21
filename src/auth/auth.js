@@ -1,20 +1,11 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
   updateProfile,
   signOut,
 } from "firebase/auth";
 import { auth } from "../../config";
-
-const authStateChanged = async () => {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // console.log(user);
-    } else {
-    }
-  });
-};
+import { Alert } from "react-native";
 
 const updateUser = async (name) => {
   updateProfile(auth.currentUser, {
@@ -46,7 +37,6 @@ export const registerDB = async (imagePath, name, email, password) => {
     await updateUser(name);
     await updateUserPhoto(imagePath);
   } catch (error) {
-    alert("Invalid email");
     throw error;
   }
 };
@@ -54,10 +44,9 @@ export const registerDB = async (imagePath, name, email, password) => {
 export const loginDB = async (email, password) => {
   try {
     const credentials = await signInWithEmailAndPassword(auth, email, password);
-
-    authStateChanged();
     return credentials.user;
   } catch (error) {
+    Alert.alert("Incorrect data");
     throw error;
   }
 };
