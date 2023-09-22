@@ -137,7 +137,10 @@ export const RegistrationScreen = () => {
             </TouchableOpacity>
             <Text
               style={styles.link}
-              onPress={() => navigation.navigate("Login")}
+              onPress={() => {
+                navigation.navigate("Login");
+                reset();
+              }}
             >
               Вже є акаунт? Увійти
             </Text>

@@ -253,6 +253,7 @@ export const CreateNewPost = () => {
           style={[isDisebled ? styles.buttonDisabled : styles.button]}
           disabled={isDisebled}
           onPress={async () => {
+            setIsDisebled(true);
             let filename = null;
             try {
               const blob = await new Promise((resolve, reject) => {
@@ -302,6 +303,8 @@ export const CreateNewPost = () => {
               navigation.navigate("Posts");
             } catch (error) {
               console.log(error);
+            } finally {
+              setIsDisebled(false);
             }
           }}
         >
