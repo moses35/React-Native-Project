@@ -58,6 +58,9 @@ export const RegistrationScreen = () => {
       }
     } catch (error) {
       console.log(error);
+      if (error.message === "Firebase: Error (auth/email-already-in-use).") {
+        Alert.alert("Email already in use");
+      }
     }
   };
 
